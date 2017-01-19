@@ -1,6 +1,6 @@
 {
   "name": "astrotomic/instagram-parser",
-  "description": "Management system of internal notifications for Laravel 5.*",
+  "description": "Parses data from Instagram without API access.",
   "keywords": ["php", "instagram", "parser"],
   "license": "MIT",
   "authors": [
