@@ -146,14 +146,14 @@ class InstagramParser
 
         return $result;
     }
-    
+
     public function getShortcodeMedia($shortcode)
     {
         $result = null;
-        $dataKey = '$' . $shortcode;
+        $dataKey = '$'.$shortcode;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/p/' . $shortcode . '/');
+            $response = $this->request('get', '/p/'.$shortcode.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             } else {
@@ -165,7 +165,7 @@ class InstagramParser
                         throw new \InvalidArgumentException('invalid media shortcode');
                         break;
                     case 200:
-                        $sharedJson = array();
+                        $sharedJson = [];
                         if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
                             throw new \RuntimeException('service is unavailable now');
                         } else {
@@ -187,6 +187,7 @@ class InstagramParser
         if ($data) {
             $result = $this->parseNode($data);
         }
+
         return $result;
     }
 
