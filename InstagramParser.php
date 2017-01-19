@@ -1,7 +1,4 @@
 <?php
-
-namespace App\Console\Commands;
-
 class InstagramParser
 {
     protected $config = [];
