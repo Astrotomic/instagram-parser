@@ -14,7 +14,7 @@ class InstagramParser
             "allowed_usernames" => "*",
             "allowed_tags" => "*",
             "debug" => "false",
-            "storage_path" => storage_path('app/instagram'),
+            "storage_path" => __DIR__ .'/storage',
             "count" => 33,
             "max_id" => null,
         ];
