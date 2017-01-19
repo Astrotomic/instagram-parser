@@ -14,8 +14,6 @@ class InstagramParser
             'allowed_tags'      => '*',
             'debug'             => 'false',
             'storage_path'      => __DIR__.'/storage',
-            'count'             => 33,
-            'max_id'            => null,
         ];
         $client = [
             'base_url'   => 'https://www.instagram.com/',
@@ -74,8 +72,6 @@ class InstagramParser
             throw new \InvalidArgumentException('specified username is not allowed');
         }
         $result = null;
-        $count = $this->getConfig('count');
-        $maxId = $this->getConfig('max_id');
         $atUserName = '@'.$userName;
         $data = $this->getData($atUserName);
         if (is_null($data)) {
