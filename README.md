@@ -10,5 +10,6 @@ Parses data from Instagram without API access.
 
 ```php
 $instagram = new InstagramParser();
+$instagram->setConfig('storage_path', '/your/path/for/the/cache/files'); // optional but recommended to change this
 $media = $instagram->getUserRecentMedia('user.name');
 ```
