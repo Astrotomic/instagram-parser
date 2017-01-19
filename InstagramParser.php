@@ -190,7 +190,7 @@ class InstagramParser
 
         return $result;
     }
-    
+
     public function getUser($userName)
     {
         $config = $this->getConfig();
@@ -200,10 +200,10 @@ class InstagramParser
             throw new \InvalidArgumentException('specified username is not allowed');
         }
         $result = null;
-        $dataKey = '@' . $userName;
+        $dataKey = '@'.$userName;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/' . $userName . '/');
+            $response = $this->request('get', '/'.$userName.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             } else {
@@ -215,7 +215,7 @@ class InstagramParser
                         throw new \RuntimeException('this user does not exist');
                         break;
                     case 200:
-                        $sharedJson = array();
+                        $sharedJson = [];
                         if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
                             throw new \RuntimeException('service is unavailable now');
                         } else {
@@ -227,7 +227,7 @@ class InstagramParser
                                 if ($user['is_private']) {
                                     throw new \RuntimeException('you can not view this resource');
                                 } else {
-                                    $queryResponse = $this->request('post', '/query/', array('data' => array('q' => 'ig_user(' . $user['id'] . ') { media.after(0, ' . $mediaLimit . ') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }'), 'headers' => array('X-Csrftoken' => $response['cookies']['csrftoken'], 'X-Requested-With' => 'XMLHttpRequest', 'X-Instagram-Ajax' => '1')));
+                                    $queryResponse = $this->request('post', '/query/', ['data' => ['q' => 'ig_user('.$user['id'].') { media.after(0, '.$mediaLimit.') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }'], 'headers' => ['X-Csrftoken' => $response['cookies']['csrftoken'], 'X-Requested-With' => 'XMLHttpRequest', 'X-Instagram-Ajax' => '1']]);
                                     if ($queryResponse['http_code'] != 200) {
                                         throw new \RuntimeException('service is unavailable now');
                                     } else {
@@ -252,17 +252,18 @@ class InstagramParser
         }
         if ($data) {
             $result = [
-                'username' => $data['username'],
+                'username'        => $data['username'],
                 'profile_picture' => $data['profile_pic_url'],
-                'id' => $data['id'],
-                'full_name' => $data['full_name'],
-                'counts' => [
-                    'media' => $data['media']['count'],
+                'id'              => $data['id'],
+                'full_name'       => $data['full_name'],
+                'counts'          => [
+                    'media'       => $data['media']['count'],
                     'followed_by' => $data['followed_by']['count'],
-                    'follows' => $data['follows']['count'],
+                    'follows'     => $data['follows']['count'],
                 ],
             ];
         }
+
         return $result;
     }
 
