@@ -21,7 +21,7 @@ $instagram->setConfig('storage_path', '/your/path/for/the/cache/files'); // opti
 // get recent Media informations by User
 $media = $instagram->getUserRecentMedia('username');
 
-// get Media informations by shortcode
+// get Media informations by Shortcode
 $media = $instagram->getShortcodeMedia('shortcode');
 
 // get informations for User
