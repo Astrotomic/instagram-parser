@@ -146,6 +146,49 @@ class InstagramParser
 
         return $result;
     }
+    
+    public function getShortcodeMedia($shortcode)
+    {
+        $result = null;
+        $dataKey = '$' . $shortcode;
+        $data = $this->getData($dataKey);
+        if (is_null($data)) {
+            $response = $this->request('get', '/p/' . $shortcode . '/');
+            if (!$response['status']) {
+                throw new \RuntimeException('service is unavailable now');
+            } else {
+                switch ($response['http_code']) {
+                    default:
+                        throw new \RuntimeException('service is unavailable now');
+                        break;
+                    case 404:
+                        throw new \InvalidArgumentException('invalid media shortcode');
+                        break;
+                    case 200:
+                        $sharedJson = array();
+                        if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
+                            throw new \RuntimeException('service is unavailable now');
+                        } else {
+                            $sharedData = json_decode($sharedJson[1], true);
+                            if (empty($sharedData['entry_data']['PostPage'][0]['media'])) {
+                                throw new \RuntimeException('service is unavailable now');
+                            } else {
+                                $data = $sharedData['entry_data']['PostPage'][0]['media'];
+                                $this->putData($dataKey, $data);
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+        if (!$data) {
+            $data = $this->getData($dataKey, false);
+        }
+        if ($data) {
+            $result = $this->parseNode($data);
+        }
+        return $result;
+    }
 
     protected function isAllowedUsername($userName, $allowedUsernames)
     {
