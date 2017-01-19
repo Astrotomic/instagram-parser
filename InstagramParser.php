@@ -8,21 +8,21 @@ class InstagramParser
     public function __construct()
     {
         $config = [
-            "media_limit" => 100,
-            "cache_time" => 3600,
-            "allowed_usernames" => "*",
-            "allowed_tags" => "*",
-            "storage_path" => __DIR__.'/storage',
+            'media_limit'       => 100,
+            'cache_time'        => 3600,
+            'allowed_usernames' => '*',
+            'allowed_tags'      => '*',
+            'storage_path'      => __DIR__.'/storage',
         ];
         $client = [
-            'base_url' => 'https://www.instagram.com/',
+            'base_url'   => 'https://www.instagram.com/',
             'cookie_jar' => [],
-            'headers' => [
+            'headers'    => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36',
-                'Origin' => 'https://www.instagram.com',
-                'Referer' => 'https://www.instagram.com',
-                'Connection' => 'close'
-            ]
+                'Origin'     => 'https://www.instagram.com',
+                'Referer'    => 'https://www.instagram.com',
+                'Connection' => 'close',
+            ],
         ];
         $this->setConfig($config);
         $this->setClient($client);
@@ -41,6 +41,7 @@ class InstagramParser
         if (is_null($key)) {
             return $this->config;
         }
+
         return $this->config[$key];
     }
 
@@ -57,6 +58,7 @@ class InstagramParser
         if (is_null($key)) {
             return $this->client;
         }
+
         return $this->client[$key];
     }
 
@@ -69,10 +71,10 @@ class InstagramParser
             throw new \InvalidArgumentException('specified username is not allowed');
         }
         $result = null;
-        $dataKey = '@' . $userName;
+        $dataKey = '@'.$userName;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/' . $userName . '/');
+            $response = $this->request('get', '/'.$userName.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             } else {
@@ -98,13 +100,13 @@ class InstagramParser
                                 } else {
                                     $queryResponse = $this->request('post', '/query/', [
                                         'data' => [
-                                            'q' => 'ig_user(' . $user['id'] . ') { media.after(0, ' . $mediaLimit . ') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }',
+                                            'q' => 'ig_user('.$user['id'].') { media.after(0, '.$mediaLimit.') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }',
                                         ],
                                         'headers' => [
-                                            'X-Csrftoken' => $response['cookies']['csrftoken'],
+                                            'X-Csrftoken'      => $response['cookies']['csrftoken'],
                                             'X-Requested-With' => 'XMLHttpRequest',
                                             'X-Instagram-Ajax' => '1',
-                                        ]
+                                        ],
                                     ]);
                                     if ($queryResponse['http_code'] != 200) {
                                         throw new \RuntimeException('service is unavailable now');
@@ -131,25 +133,26 @@ class InstagramParser
         if ($data) {
             $result = [];
             $formattedUser = [
-                'username' => $data['username'],
+                'username'        => $data['username'],
                 'profile_picture' => $data['profile_pic_url'],
-                'id' => $data['id'],
-                'full_name' => $data['full_name'],
+                'id'              => $data['id'],
+                'full_name'       => $data['full_name'],
             ];
             foreach ($data['media']['nodes'] as $node) {
                 $result[] = $this->parseNode($node, $formattedUser);
             }
         }
+
         return $result;
     }
 
     public function getShortcodeMedia($shortcode)
     {
         $result = null;
-        $dataKey = '$' . $shortcode;
+        $dataKey = '$'.$shortcode;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/p/' . $shortcode . '/');
+            $response = $this->request('get', '/p/'.$shortcode.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             } else {
@@ -161,7 +164,7 @@ class InstagramParser
                         throw new \InvalidArgumentException('invalid media shortcode');
                         break;
                     case 200:
-                        $sharedJson = array();
+                        $sharedJson = [];
                         if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
                             throw new \RuntimeException('service is unavailable now');
                         } else {
@@ -183,6 +186,7 @@ class InstagramParser
         if ($data) {
             $result = $this->parseNode($data);
         }
+
         return $result;
     }
 
@@ -195,10 +199,10 @@ class InstagramParser
             throw new \InvalidArgumentException('specified username is not allowed');
         }
         $result = null;
-        $dataKey = '@' . $userName;
+        $dataKey = '@'.$userName;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/' . $userName . '/');
+            $response = $this->request('get', '/'.$userName.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             } else {
@@ -210,7 +214,7 @@ class InstagramParser
                         throw new \RuntimeException('this user does not exist');
                         break;
                     case 200:
-                        $sharedJson = array();
+                        $sharedJson = [];
                         if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
                             throw new \RuntimeException('service is unavailable now');
                         } else {
@@ -222,7 +226,7 @@ class InstagramParser
                                 if ($user['is_private']) {
                                     throw new \RuntimeException('you can not view this resource');
                                 } else {
-                                    $queryResponse = $this->request('post', '/query/', array('data' => array('q' => 'ig_user(' . $user['id'] . ') { media.after(0, ' . $mediaLimit . ') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }'), 'headers' => array('X-Csrftoken' => $response['cookies']['csrftoken'], 'X-Requested-With' => 'XMLHttpRequest', 'X-Instagram-Ajax' => '1')));
+                                    $queryResponse = $this->request('post', '/query/', ['data' => ['q' => 'ig_user('.$user['id'].') { media.after(0, '.$mediaLimit.') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }'], 'headers' => ['X-Csrftoken' => $response['cookies']['csrftoken'], 'X-Requested-With' => 'XMLHttpRequest', 'X-Instagram-Ajax' => '1']]);
                                     if ($queryResponse['http_code'] != 200) {
                                         throw new \RuntimeException('service is unavailable now');
                                     } else {
@@ -247,17 +251,18 @@ class InstagramParser
         }
         if ($data) {
             $result = [
-                'username' => $data['username'],
+                'username'        => $data['username'],
                 'profile_picture' => $data['profile_pic_url'],
-                'id' => $data['id'],
-                'full_name' => $data['full_name'],
-                'counts' => [
-                    'media' => $data['media']['count'],
+                'id'              => $data['id'],
+                'full_name'       => $data['full_name'],
+                'counts'          => [
+                    'media'       => $data['media']['count'],
                     'followed_by' => $data['followed_by']['count'],
-                    'follows' => $data['follows']['count'],
+                    'follows'     => $data['follows']['count'],
                 ],
             ];
         }
+
         return $result;
     }
 
@@ -270,10 +275,10 @@ class InstagramParser
             throw new \InvalidArgumentException('specified tag is not allowed');
         }
         $result = null;
-        $dataKey = '#' . $tag;
+        $dataKey = '#'.$tag;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/explore/tags/' . $tag . '/');
+            $response = $this->request('get', '/explore/tags/'.$tag.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             } else {
@@ -285,7 +290,7 @@ class InstagramParser
                         throw new \RuntimeException('invalid media shortcode');
                         break;
                     case 200:
-                        $sharedJson = array();
+                        $sharedJson = [];
                         if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
                             throw new \RuntimeException('service is unavailable now');
                         } else {
@@ -302,7 +307,7 @@ class InstagramParser
                                 }
                                 $nodeSuccess = true;
                                 foreach ($tagData['media']['nodes'] as $key => $node) {
-                                    $nodeResponse = $this->request('get', '/p/' . $node['code'] . '/');
+                                    $nodeResponse = $this->request('get', '/p/'.$node['code'].'/');
                                     if ($nodeResponse['http_code'] != 200) {
                                         $nodeSuccess = false;
                                         break;
@@ -329,7 +334,7 @@ class InstagramParser
                                     $mediaLimitNextPage = $mediaLimit - 12;
                                     $hasNextPage = $tagData['media']['page_info']['has_next_page'] && $mediaLimitNextPage > 0;
                                     while ($hasNextPage) {
-                                        $queryResponse = $this->request('post', '/query/', array('data' => array('q' => 'ig_hashtag(' . $tag . ') { media.after(' . $endCursor . ', ' . ($mediaLimitNextPage > 33 ? 33 : $mediaLimitNextPage) . ') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id, username, full_name, profile_pic_url }, thumbnail_src, video_url, location { name, id } }, page_info} }',), 'headers' => array('X-Csrftoken' => $response['cookies']['csrftoken'], 'X-Requested-With' => 'XMLHttpRequest', 'X-Instagram-Ajax' => '1')));
+                                        $queryResponse = $this->request('post', '/query/', ['data' => ['q' => 'ig_hashtag('.$tag.') { media.after('.$endCursor.', '.($mediaLimitNextPage > 33 ? 33 : $mediaLimitNextPage).') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id, username, full_name, profile_pic_url }, thumbnail_src, video_url, location { name, id } }, page_info} }'], 'headers' => ['X-Csrftoken' => $response['cookies']['csrftoken'], 'X-Requested-With' => 'XMLHttpRequest', 'X-Instagram-Ajax' => '1']]);
                                         if ($queryResponse['http_code'] != 200) {
                                             $querySuccess = false;
                                             break;
@@ -363,18 +368,20 @@ class InstagramParser
             $data = $this->getData($dataKey, false);
         }
         if ($data) {
-            $result = array();
+            $result = [];
             foreach ($data['media']['nodes'] as $node) {
                 $result[] = $this->parseNode($node);
             }
         }
+
         return $result;
     }
 
     protected function isAllowed($userName, $allowedUsernames)
     {
-        $allowedUsernames = is_array($allowedUsernames) || is_object($allowedUsernames) ? (array)array_values($allowedUsernames) : explode(',', $allowedUsernames);
+        $allowedUsernames = is_array($allowedUsernames) || is_object($allowedUsernames) ? (array) array_values($allowedUsernames) : explode(',', $allowedUsernames);
         $allowedUsernames = array_map('trim', $allowedUsernames);
+
         return in_array('*', $allowedUsernames) || in_array($userName, $allowedUsernames);
     }
 
@@ -383,7 +390,7 @@ class InstagramParser
         $cacheTime = $this->getCacheTime();
         $fileName = md5($key);
         $storagePath = $this->getStoragePath();
-        $filePath = $storagePath . '/' . $fileName . '.csv';
+        $filePath = $storagePath.'/'.$fileName.'.csv';
         if (!is_readable($filePath)) {
             return null;
         }
@@ -392,6 +399,7 @@ class InstagramParser
         if (!$csv || count($csv) != 3 || ($validCache && time() > $csv[1] + $cacheTime)) {
             return null;
         }
+
         return json_decode($csv[2], true);
     }
 
@@ -399,19 +407,21 @@ class InstagramParser
     {
         $fileName = md5($key);
         $storagePath = $this->getStoragePath();
-        $filePath = $storagePath . '/' . $fileName . '.csv';
+        $filePath = $storagePath.'/'.$fileName.'.csv';
         if (!is_dir($storagePath) && !@mkdir($storagePath, 0775, true)) {
             return false;
         }
         $resource = fopen($filePath, 'w');
         fputcsv($resource, [$key, time(), json_encode($data)], ';');
         fclose($resource);
+
         return true;
     }
 
     protected function getCacheTime()
     {
-        $cacheTime = (int)$this->getConfig('cache_time');
+        $cacheTime = (int) $this->getConfig('cache_time');
+
         return ($cacheTime > 0) ? $cacheTime : 3600;
     }
 
@@ -425,7 +435,7 @@ class InstagramParser
         $client = $this->getClient();
         $method = strtoupper($method);
         $meta = is_array($meta) ? $meta : [];
-        $url = (!empty($client['base_url']) ? rtrim($client['base_url'], '/') : '') . $url;
+        $url = (!empty($client['base_url']) ? rtrim($client['base_url'], '/') : '').$url;
         $parsedUrl = parse_url($url);
         $schema = !empty($parsedUrl['scheme']) ? $parsedUrl['scheme'] : '';
         $host = !empty($parsedUrl['host']) ? $parsedUrl['host'] : '';
@@ -444,7 +454,7 @@ class InstagramParser
         if ($metaCookies) {
             $headerCookies = [];
             foreach ($metaCookies as $cookieName => $cookieValue) {
-                $headerCookies[] = $cookieName . '=' . $cookieValue;
+                $headerCookies[] = $cookieName.'='.$cookieValue;
             }
             unset($cookieName, $cookieValue);
             $headers['Cookie'] = implode('; ', $headerCookies);
@@ -458,7 +468,7 @@ class InstagramParser
         }
         $httpHeader = [];
         foreach ($headers as $headerName => $headerValue) {
-            $httpHeader[] = $headerName . ': ' . $headerValue;
+            $httpHeader[] = $headerName.': '.$headerValue;
         }
         unset($headerName, $headerValue);
         $wLtvZaiXEoqQBgJVdhac = null;
@@ -473,9 +483,9 @@ class InstagramParser
             $curl = curl_init();
             $curl_options = [
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HEADER => true,
-                CURLOPT_URL => $schema . '://' . $host . $path,
-                CURLOPT_HTTPHEADER => $httpHeader,
+                CURLOPT_HEADER         => true,
+                CURLOPT_URL            => $schema.'://'.$host.$path,
+                CURLOPT_HTTPHEADER     => $httpHeader,
                 CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_CONNECTTIMEOUT => 15,
             ];
@@ -503,11 +513,11 @@ class InstagramParser
                 $schema = 'ssl';
                 $port = !empty($port) ? $port : 443;
             }
-            $schema = !empty($schema) ? $schema . '://' : '';
+            $schema = !empty($schema) ? $schema.'://' : '';
             $port = !empty($port) ? $port : 80;
-            $socket = @fsockopen($schema . $host, $port, $errorNo, $errorMsg, 15);
+            $socket = @fsockopen($schema.$host, $port, $errorNo, $errorMsg, 15);
             if (!$socket) {
-                throw new \RuntimeException('An error occurred while loading data error_number: ' . $errorNo . ', error_message: ' . $errorMsg);
+                throw new \RuntimeException('An error occurred while loading data error_number: '.$errorNo.', error_message: '.$errorMsg);
             }
             fwrite($socket, $socketString);
             $result = '';
@@ -518,25 +528,25 @@ class InstagramParser
         }
 
         if (!isset($result)) {
-            throw new \RuntimeException("was not able to fetch a result");
+            throw new \RuntimeException('was not able to fetch a result');
         }
 
-        list ($head, $body) = explode("\r\n\r\n", $result);
+        list($head, $body) = explode("\r\n\r\n", $result);
         $headLines = explode("\r\n", $head);
         $firstHeadLine = array_shift($headLines);
         preg_match('#^([^\s]+)\s(\d+)\s([^$]+)$#', $firstHeadLine, $headerHttpInfos);
         array_shift($headerHttpInfos);
-        list ($httpProtocol, $httpCode, $httpMessage) = $headerHttpInfos;
+        list($httpProtocol, $httpCode, $httpMessage) = $headerHttpInfos;
         $responseHeaders = [];
         $responseCookies = [];
         foreach ($headLines as $headLine) {
-            list ($headerName, $headerValue) = explode(': ', $headLine);
+            list($headerName, $headerValue) = explode(': ', $headLine);
             if (strtolower($headerName) === 'set-cookie') {
                 $responseHeaderCookies = explode('; ', $headerValue);
                 if (empty($responseHeaderCookies[0])) {
                     continue;
                 }
-                list ($cookieName, $cookieValue) = explode('=', $responseHeaderCookies[0]);
+                list($cookieName, $cookieValue) = explode('=', $responseHeaderCookies[0]);
                 $responseCookies[$cookieName] = $cookieValue;
             } else {
                 $responseHeaders[$headerName] = $headerValue;
@@ -547,14 +557,15 @@ class InstagramParser
             $client['cookie_jar'][$host] = $this->mergeArrays($baseCookies, $responseCookies);
             $this->setClient($client);
         }
+
         return [
-            'status' => 1,
+            'status'        => 1,
             'http_protocol' => $httpProtocol,
-            'http_code' => $httpCode,
-            'http_message' => $httpMessage,
-            'headers' => $responseHeaders,
-            'cookies' => $responseCookies,
-            'body' => $body,
+            'http_code'     => $httpCode,
+            'http_message'  => $httpMessage,
+            'headers'       => $responseHeaders,
+            'cookies'       => $responseCookies,
+            'body'          => $body,
         ];
     }
 
@@ -572,12 +583,14 @@ class InstagramParser
                 array_merge(array_values($result), array_values($array))
             );
         }
+
         return $result;
     }
 
     protected function getCookies($host)
     {
         $cookies = $this->getClient('cookie_jar');
+
         return !empty($cookies[$host]) ? $cookies[$host] : [];
     }
 
@@ -586,60 +599,60 @@ class InstagramParser
         $formattedUser = !empty($formattedUser) ? $formattedUser : null;
         if (!empty($node['owner']) && is_null($formattedUser)) {
             $formattedUser = [
-                'username' => $node['owner']['username'],
+                'username'        => $node['owner']['username'],
                 'profile_picture' => $node['owner']['profile_pic_url'],
-                'id' => $node['owner']['id'],
-                'full_name' => $node['owner']['full_name']
+                'id'              => $node['owner']['id'],
+                'full_name'       => $node['owner']['full_name'],
             ];
         }
 
         $aspectRatio = $node['dimensions']['height'] / $node['dimensions']['width'];
 
         $media = [
-            'attribution' => null,
-            'videos' => null,
-            'tags' => null,
-            'location' => null,
-            'comments' => null,
-            'filter' => !empty($node['filter_name']) ? $node['filter_name'] : null,
+            'attribution'  => null,
+            'videos'       => null,
+            'tags'         => null,
+            'location'     => null,
+            'comments'     => null,
+            'filter'       => !empty($node['filter_name']) ? $node['filter_name'] : null,
             'created_time' => $node['date'],
-            'link' => 'https://www.instagram.com/p/' . $node['code'] . '/',
-            'likes' => null,
-            'images' => [
+            'link'         => 'https://www.instagram.com/p/'.$node['code'].'/',
+            'likes'        => null,
+            'images'       => [
                 'low_resolution' => [
-                    'url' => $this->getDisplaySrcBySize($node['display_src'], 320, 320),
-                    'width' => 320,
+                    'url'    => $this->getDisplaySrcBySize($node['display_src'], 320, 320),
+                    'width'  => 320,
                     'height' => $aspectRatio * 320,
                 ],
                 'thumbnail' => [
-                    'url' => $this->getDisplaySrcBySize($node['display_src'], 150, 150),
-                    'width' => 150,
+                    'url'    => $this->getDisplaySrcBySize($node['display_src'], 150, 150),
+                    'width'  => 150,
                     'height' => $aspectRatio * 150,
                 ],
                 'standard_resolution' => [
-                    'url' => $this->getDisplaySrcBySize($node['display_src'], 640, 640),
-                    'width' => 640,
+                    'url'    => $this->getDisplaySrcBySize($node['display_src'], 640, 640),
+                    'width'  => 640,
                     'height' => $aspectRatio * 640,
                 ],
                 '__original' => [
-                    'url' => $node['display_src'],
-                    'width' => $node['dimensions']['width'],
+                    'url'    => $node['display_src'],
+                    'width'  => $node['dimensions']['width'],
                     'height' => $node['dimensions']['height'],
                 ],
             ],
             'users_in_photo' => null,
-            'caption' => null,
-            'type' => $node['is_video'] ? 'video' : 'image',
-            'id' => $node['id'] . '_' . $formattedUser['id'],
-            'code' => $node['code'],
-            'user' => $formattedUser
+            'caption'        => null,
+            'type'           => $node['is_video'] ? 'video' : 'image',
+            'id'             => $node['id'].'_'.$formattedUser['id'],
+            'code'           => $node['code'],
+            'user'           => $formattedUser,
         ];
 
         if (!empty($node['caption'])) {
             $media['caption'] = [
                 'created_time' => $node['date'],
-                'text' => $node['caption'],
-                'from' => $formattedUser,
+                'text'         => $node['caption'],
+                'from'         => $formattedUser,
             ];
             $media['tags'] = $this->parseTags($node['caption']);
         }
@@ -647,8 +660,8 @@ class InstagramParser
         if (!empty($node['video_url'])) {
             $media['videos'] = [
                 'standard_resolution' => [
-                    'url' => $node['video_url'],
-                    'width' => 640,
+                    'url'    => $node['video_url'],
+                    'width'  => 640,
                     'height' => $aspectRatio * 640,
                 ],
             ];
@@ -657,7 +670,7 @@ class InstagramParser
         if (!empty($node['comments'])) {
             $media['comments'] = [
                 'count' => !empty($node['comments']['count']) ? $node['comments']['count'] : 0,
-                'data' => [],
+                'data'  => [],
             ];
 
             if (!empty($node['comments']['nodes'])) {
@@ -666,15 +679,15 @@ class InstagramParser
                     $commentUser = null;
                     if (!empty($comment['user'])) {
                         $commentUser = [
-                            'username' => $comment['user']['username'],
+                            'username'        => $comment['user']['username'],
                             'profile_picture' => $comment['user']['profile_pic_url'],
-                            'id' => $comment['user']['id'],
+                            'id'              => $comment['user']['id'],
                         ];
                     }
                     $media['comments']['data'][] = [
                         'created_time' => $comment['created_at'],
-                        'text' => $comment['text'],
-                        'from' => $commentUser,
+                        'text'         => $comment['text'],
+                        'from'         => $commentUser,
                     ];
                 }
             }
@@ -682,7 +695,7 @@ class InstagramParser
         if (!empty($node['likes'])) {
             $media['likes'] = [
                 'count' => !empty($node['likes']['count']) ? $node['likes']['count'] : 0,
-                'data' => [],
+                'data'  => [],
             ];
             if (!empty($node['likes']['nodes'])) {
                 $likes = $node['likes']['nodes'];
@@ -690,9 +703,9 @@ class InstagramParser
                     $likeUser = null;
                     if (!empty($like['user'])) {
                         $likeUser = [
-                            'username' => $like['user']['username'],
+                            'username'        => $like['user']['username'],
                             'profile_picture' => $like['user']['profile_pic_url'],
-                            'id' => $like['user']['id'],
+                            'id'              => $like['user']['id'],
                         ];
                     }
                     $media['likes']['data'][] = $likeUser;
@@ -702,39 +715,43 @@ class InstagramParser
         if (!empty($node['location'])) {
             $media['location'] = [
                 'name' => $node['location']['name'],
-                'id' => $node['location']['id'],
+                'id'   => $node['location']['id'],
             ];
         }
+
         return $media;
     }
 
     protected function getDisplaySrcBySize($displaySrc, $width, $height)
     {
         if (preg_match('#/s\d+x\d+/#', $displaySrc)) {
-            return preg_replace('#/s\d+x\d+/#', '/s' . $width . 'x' . $height . '/', $displaySrc);
-        } else if (preg_match('#/e\d+/#', $displaySrc)) {
-            return preg_replace('#/e(\d+)/#', '/s' . $width . 'x' . $height . '/e$1/', $displaySrc);
-        } else if (preg_match('#(\.com/[^/]+)/#', $displaySrc)) {
-            return preg_replace('#(\.com/[^/]+)/#', '$1/s' . $width . 'x' . $height . '/', $displaySrc);
+            return preg_replace('#/s\d+x\d+/#', '/s'.$width.'x'.$height.'/', $displaySrc);
+        } elseif (preg_match('#/e\d+/#', $displaySrc)) {
+            return preg_replace('#/e(\d+)/#', '/s'.$width.'x'.$height.'/e$1/', $displaySrc);
+        } elseif (preg_match('#(\.com/[^/]+)/#', $displaySrc)) {
+            return preg_replace('#(\.com/[^/]+)/#', '$1/s'.$width.'x'.$height.'/', $displaySrc);
         }
+
         return null;
     }
 
     protected function parseTags($caption)
     {
         preg_match_all('#\#([\w_]+)#u', $caption, $tags);
+
         return $tags[1];
     }
 
     protected function getUniqueNodes()
     {
-        $result = array();
+        $result = [];
         $nodeHolder = func_get_args();
         foreach ($nodeHolder as $nodes) {
             foreach ($nodes as $node) {
                 $result[$node['code']] = $node;
             }
         }
+
         return array_values($result);
     }
 }
