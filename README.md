@@ -6,10 +6,13 @@ Parses data from Instagram without API access.
 
 ## Usage
 
-### get Media informations by User
-
 ```php
 $instagram = new InstagramParser();
 $instagram->setConfig('storage_path', '/your/path/for/the/cache/files'); // optional but recommended
-$media = $instagram->getUserRecentMedia('user.name');
+
+// get recent Media informations by User
+$media = $instagram->getUserRecentMedia('username');
+
+// get Media informations by shortcode
+$media = $instagram->getShortcodeMedia('shortcode');
 ```
