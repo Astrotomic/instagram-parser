@@ -1,0 +1,21 @@
+{
+  "name": "astrotomic/instagram-parser",
+  "description": "Management system of internal notifications for Laravel 5.*",
+  "keywords": ["php", "instagram", "parser"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tom Witkowski",
+      "email": "dev.gummibeer@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Astrotomic\\InstagramParser\\": "src/InstagramParser"
+    }
+  }
+}
