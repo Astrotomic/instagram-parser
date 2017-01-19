@@ -15,4 +15,7 @@ $media = $instagram->getUserRecentMedia('username');
 
 // get Media informations by shortcode
 $media = $instagram->getShortcodeMedia('shortcode');
+
+// get informations for User
+$media = $instagram->getUser('username');
 ```
