@@ -1,5 +1,5 @@
 <?php
-namespace Astrotomic\InstagramParser
+namespace Astrotomic\InstagramParser;
 
 class InstagramParser
 {
