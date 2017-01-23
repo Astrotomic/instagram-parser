@@ -626,15 +626,15 @@ class InstagramParser
                     'width'  => 320,
                     'height' => $aspectRatio * 320,
                 ],
-                'thumbnail' => [
-                    'url'    => $this->getDisplaySrcBySize($node['display_src'], 150, 150),
-                    'width'  => 150,
-                    'height' => $aspectRatio * 150,
-                ],
                 'standard_resolution' => [
                     'url'    => $this->getDisplaySrcBySize($node['display_src'], 640, 640),
                     'width'  => 640,
                     'height' => $aspectRatio * 640,
+                ],
+                'thumbnail' => [
+                    'url'    => $node['thumbnail_src'],
+                    'width'  => 640,
+                    'height' => 640,
                 ],
                 '__original' => [
                     'url'    => $node['display_src'],
