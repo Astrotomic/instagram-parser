@@ -1,4 +1,5 @@
 <?php
+
 namespace Astrotomic\InstagramParser\Tests;
 
 class ShortcodeMediaTest extends InstagramTestCase
@@ -9,7 +10,7 @@ class ShortcodeMediaTest extends InstagramTestCase
     {
         $parser = $this->getInstagramParser();
         $data = $parser->getShortcodeMedia($this->shortcode);
-        
+
         $this->assertInternalType('array', $data);
     }
 

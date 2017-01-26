@@ -644,7 +644,7 @@ class InstagramParser
             'code'           => $node['code'],
             'user'           => $formattedUser,
         ];
-        if(array_key_exists('thumbnail_src', $node)) {
+        if (array_key_exists('thumbnail_src', $node)) {
             $media['images']['thumbnail'] = [
                 'url'    => $node['thumbnail_src'],
                 'width'  => 640,
