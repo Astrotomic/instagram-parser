@@ -16,17 +16,17 @@ Parses data from Instagram without API access.
 
 ```php
 $instagram = new InstagramParser();
-$instagram->setConfig('storage_path', '/your/path/for/the/cache/files'); // optional but recommended
+$instagram->setConfig('/your/path/for/the/cache/files', 'storage_path'); // optional but recommended
 
 // get recent Media informations by User
-$media = $instagram->getUserRecentMedia('username');
+$data = $instagram->getUserRecentMedia('username');
 
 // get Media informations by Shortcode
-$media = $instagram->getShortcodeMedia('shortcode');
+$data = $instagram->getShortcodeMedia('shortcode');
 
 // get informations for User
-$media = $instagram->getUser('username');
+$data = $instagram->getUser('username');
 
 // get recent Media informations by Tag
-$media = $instagram->getTagRecentMedia('tag');
+$data = $instagram->getTagRecentMedia('tag');
 ```

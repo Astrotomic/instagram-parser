@@ -255,12 +255,12 @@ class InstagramParser
             $result = [
                 'username'        => $data['username'],
                 'profile_picture' => $data['profile_pic_url'],
-                'id'              => $data['id'],
+                'id'              => (int) $data['id'],
                 'full_name'       => $data['full_name'],
                 'counts'          => [
-                    'media'       => $data['media']['count'],
-                    'followed_by' => $data['followed_by']['count'],
-                    'follows'     => $data['follows']['count'],
+                    'media'       => (int) $data['media']['count'],
+                    'followed_by' => (int) $data['followed_by']['count'],
+                    'follows'     => (int) $data['follows']['count'],
                 ],
             ];
         }
@@ -631,11 +631,6 @@ class InstagramParser
                     'width'  => 640,
                     'height' => $aspectRatio * 640,
                 ],
-                'thumbnail' => [
-                    'url'    => $node['thumbnail_src'],
-                    'width'  => 640,
-                    'height' => 640,
-                ],
                 '__original' => [
                     'url'    => $node['display_src'],
                     'width'  => $node['dimensions']['width'],
@@ -649,6 +644,13 @@ class InstagramParser
             'code'           => $node['code'],
             'user'           => $formattedUser,
         ];
+        if(array_key_exists('thumbnail_src', $node)) {
+            $media['images']['thumbnail'] = [
+                'url'    => $node['thumbnail_src'],
+                'width'  => 640,
+                'height' => 640,
+            ];
+        }
 
         if (!empty($node['caption'])) {
             $media['caption'] = [

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false">
+    <testsuites>
+        <testsuite name="instagram parser suite">
+            <directory suffix=".php">./tests/unit</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/InstagramParser</directory>
+        </whitelist>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+            <directory>./build</directory>
+        </exclude>
+    </filter>
+    <logging>
+        <log type="coverage-html" target="./build/coverage" title="Retail Barometer Code Coverage Results" charset="UTF-8" yui="true" highlight="true" lowUpperBound="50" highLowerBound="75"/>
+        <log type="coverage-clover" target="./build/logs/clover.xml"/>
+    </logging>
+</phpunit>

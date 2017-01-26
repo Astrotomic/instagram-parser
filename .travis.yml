@@ -1,0 +1,36 @@
+language: php
+
+## Run on container environment
+sudo: false
+
+## Cache composer bits
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+## List all PHP versions to test with
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - hhvm
+  - nightly
+
+## Install Dependencies
+install:
+  - composer self-update
+  - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
+  - composer install --prefer-dist --no-interaction
+
+## Run Scripts before Tests
+before_script:
+  - composer dump-autoload -o
+
+## Run test Scripts
+script:
+  - vendor/bin/phpunit
+
+## Send Build Notifications to Slack
+notifications:
+  slack: astrotomic:CnF7P2xaZuJTJ4VzNOy6ksDH
