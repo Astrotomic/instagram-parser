@@ -14,7 +14,7 @@ class ShortcodeMediaTest extends InstagramTestCase
         $this->assertInternalType('array', $data);
     }
 
-    public function testUnknownUserException()
+    public function testUnknownShortcodeException()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('invalid media shortcode');

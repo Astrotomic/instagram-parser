@@ -274,7 +274,7 @@ class InstagramParser
                     throw new \RuntimeException('service is unavailable now');
                     break;
                 case 404:
-                    throw new \RuntimeException('invalid media shortcode');
+                    throw new \RuntimeException('invalid media tag');
                     break;
                 case 200:
                     $sharedJson = [];
@@ -448,7 +448,6 @@ class InstagramParser
             $httpHeader[] = $headerName.': '.$headerValue;
         }
         unset($headerName, $headerValue);
-        $wLtvZaiXEoqQBgJVdhac = null;
         $curlExists = function_exists('curl_init');
         $curlErrored = false;
         $socketExists = function_exists('fsockopen');
