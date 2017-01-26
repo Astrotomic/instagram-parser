@@ -1,4 +1,5 @@
 <?php
+
 namespace Astrotomic\InstagramParser\Tests;
 
 class UserTest extends InstagramTestCase
