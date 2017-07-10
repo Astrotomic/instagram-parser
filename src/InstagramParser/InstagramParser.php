@@ -100,10 +100,7 @@ class InstagramParser
                     if ($user['is_private']) {
                         throw new \RuntimeException('you cannot view this resource');
                     }
-                    $queryResponse = $this->request('post', '/query/', [
-                        'data' => [
-                            'q' => 'ig_user('.$user['id'].') { media.after(0, '.$mediaLimit.') { count, nodes { id, caption, code, comments { count }, date, dimensions { height, width }, filter_name, display_src, id, is_video, likes { count }, owner { id }, thumbnail_src, video_url, location { name, id } }, page_info} }',
-                        ],
+                    $queryResponse = $this->request('get', '/'.$userName.'/', [
                         'headers' => [
                             'X-Csrftoken'      => $response['cookies']['csrftoken'],
                             'X-Requested-With' => 'XMLHttpRequest',
@@ -113,12 +110,15 @@ class InstagramParser
                     if ($queryResponse['http_code'] != 200) {
                         throw new \RuntimeException('service is unavailable now');
                     }
-                    $queryBody = json_decode($queryResponse['body'], true);
-                    if (!$queryBody || empty($queryBody['media']['nodes'])) {
+                    $sharedJson = [];
+                    if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $queryResponse['body'], $sharedJson)) {
                         throw new \RuntimeException('service is unavailable now');
                     }
-                    $user['media']['nodes'] = $queryBody['media']['nodes'];
-                    $data = $user;
+                    $sharedData = json_decode($sharedJson[1], true);
+                    if (empty($sharedData['entry_data']['ProfilePage'][0]['user']['media'])) {
+                        throw new \RuntimeException('service is unavailable now');
+                    }
+                    $data = $sharedData['entry_data']['ProfilePage'][0]['user']['media'];
                     $this->putData($dataKey, $data);
                     break;
             }
@@ -128,14 +128,8 @@ class InstagramParser
         }
         if ($data) {
             $result = [];
-            $formattedUser = [
-                'username'        => $data['username'],
-                'profile_picture' => $data['profile_pic_url'],
-                'id'              => $data['id'],
-                'full_name'       => $data['full_name'],
-            ];
-            foreach ($data['media']['nodes'] as $node) {
-                $result[] = $this->parseNode($node, $formattedUser);
+            foreach ($data['nodes'] as $node) {
+                $result[] = $this->parseNode($node);
             }
         }
 
@@ -148,7 +142,7 @@ class InstagramParser
         $dataKey = '$'.$shortcode;
         $data = $this->getData($dataKey);
         if (is_null($data)) {
-            $response = $this->request('get', '/p/'.$shortcode.'/');
+            $response = $this->request('get', '/explore/tags/'.$shortcode.'/');
             if (!$response['status']) {
                 throw new \RuntimeException('service is unavailable now');
             }
@@ -165,10 +159,10 @@ class InstagramParser
                         throw new \RuntimeException('service is unavailable now');
                     }
                     $sharedData = json_decode($sharedJson[1], true);
-                    if (empty($sharedData['entry_data']['PostPage'][0]['media'])) {
+                    if (empty($sharedData['entry_data']['TagPage'][0]['tag']['media'])) {
                         throw new \RuntimeException('service is unavailable now');
                     }
-                    $data = $sharedData['entry_data']['PostPage'][0]['media'];
+                    $data = $sharedData['entry_data']['TagPage'][0]['tag']['media'];
                     $this->putData($dataKey, $data);
                     break;
             }
@@ -177,7 +171,9 @@ class InstagramParser
             $data = $this->getData($dataKey, false);
         }
         if ($data) {
-            $result = $this->parseNode($data);
+            foreach ($data['nodes'] as $node) {
+                $result[] = $this->parseNode($node);
+            }
         }
 
         return $result;
@@ -573,12 +569,7 @@ class InstagramParser
     {
         $formattedUser = !empty($formattedUser) ? $formattedUser : null;
         if (!empty($node['owner']) && is_null($formattedUser)) {
-            $formattedUser = [
-                'username'        => $node['owner']['username'],
-                'profile_picture' => $node['owner']['profile_pic_url'],
-                'id'              => $node['owner']['id'],
-                'full_name'       => $node['owner']['full_name'],
-            ];
+            $formattedUser = $node['owner'];
         }
 
         $aspectRatio = $node['dimensions']['height'] / $node['dimensions']['width'];
