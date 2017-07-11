@@ -1,4 +1,5 @@
 <?php
+
 namespace Astrotomic\InstagramParser\Contracts;
 
 use Astrotomic\InstagramParser\Manager;
@@ -20,7 +21,7 @@ class AbstractEndpoint
 
     public function __call($name, $arguments)
     {
-        if(in_array($name, ['getConfig', 'getClient', 'setConfig', 'setClient'])) {
+        if (in_array($name, ['getConfig', 'getClient', 'setConfig', 'setClient'])) {
             return call_user_func_array([$this->manager, $name], $arguments);
         }
         throw new \BadMethodCallException('The method ['.$name.'] does not exist.');

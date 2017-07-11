@@ -1,4 +1,5 @@
 <?php
+
 namespace Astrotomic\InstagramParser\Traits;
 
 trait Requester
@@ -14,10 +15,11 @@ trait Requester
             $media = $sharedData['entry_data'][$pageKey][0][$typeKey]['media'];
             $nodes = array_merge($nodes, $media['nodes']);
             $hasNextPage = $media['page_info']['has_next_page'];
-            if($hasNextPage) {
+            if ($hasNextPage) {
                 $maxId = $media['page_info']['end_cursor'];
             }
-        } while($hasNextPage && count($nodes) < $limit);
+        } while ($hasNextPage && count($nodes) < $limit);
+
         return $nodes;
     }
 
@@ -38,6 +40,7 @@ trait Requester
                 if (!preg_match('#window\._sharedData\s*=\s*(.*?)\s*;\s*</script>#', $response['body'], $sharedJson)) {
                     throw new \RuntimeException('service is unavailable now');
                 }
+
                 return json_decode($sharedJson[1], true);
                 break;
         }
