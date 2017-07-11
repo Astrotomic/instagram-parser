@@ -2,7 +2,6 @@
 
 namespace Astrotomic\InstagramParser\Tests;
 
-use Astrotomic\InstagramParser\InstagramParser;
 use Astrotomic\InstagramParser\Manager;
 use PHPUnit_Framework_TestCase;
 

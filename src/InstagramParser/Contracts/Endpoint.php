@@ -1,4 +1,5 @@
 <?php
+
 namespace Astrotomic\InstagramParser\Contracts;
 
 interface Endpoint

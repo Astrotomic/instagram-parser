@@ -2,8 +2,8 @@
 
 namespace Astrotomic\InstagramParser;
 
-use Astrotomic\InstagramParser\Endpoints\UserRecentMedia;
 use Astrotomic\InstagramParser\Endpoints\TagRecentMedia;
+use Astrotomic\InstagramParser\Endpoints\UserRecentMedia;
 
 class Manager
 {
@@ -47,9 +47,10 @@ class Manager
             return $this->config;
         }
 
-        if(array_key_exists($key, $this->config) && !is_null($this->config[$key])) {
+        if (array_key_exists($key, $this->config) && !is_null($this->config[$key])) {
             return $this->config[$key];
         }
+
         return $default;
     }
 
