@@ -14,10 +14,8 @@ trait Requester
             $sharedData = $this->getSharedData($response);
             $media = $sharedData['entry_data'][$pageKey][0][$typeKey]['media'];
             $nodes = array_merge($nodes, $media['nodes']);
-            $hasNextPage = $media['page_info']['has_next_page'];
-            if ($hasNextPage) {
-                $maxId = $media['page_info']['end_cursor'];
-            }
+            $hasNextPage = $maxId != end($nodes)['id'];
+            $maxId = end($nodes)['id'];
         } while ($hasNextPage && count($nodes) < $limit);
 
         return $nodes;
@@ -57,6 +55,7 @@ trait Requester
         $host = !empty($parsedUrl['host']) ? $parsedUrl['host'] : '';
         $port = !empty($parsedUrl['port']) ? $parsedUrl['port'] : '';
         $path = !empty($parsedUrl['path']) ? $parsedUrl['path'] : '';
+        $query = !empty($parsedUrl['query']) ? $parsedUrl['query'] : '';
         $headers = !empty($client['headers']) ? $client['headers'] : [];
         if (!empty($meta['headers'])) {
             $headers = $this->mergeArrays($headers, $meta['headers']);
@@ -98,7 +97,7 @@ trait Requester
             $curlOptions = [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_HEADER         => true,
-                CURLOPT_URL            => $schema.'://'.$host.$path,
+                CURLOPT_URL            => $schema.'://'.$host.$path.'?'.$query,
                 CURLOPT_HTTPHEADER     => $httpHeader,
                 CURLOPT_SSL_VERIFYPEER => false,
                 CURLOPT_CONNECTTIMEOUT => 15,
