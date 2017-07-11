@@ -14,20 +14,10 @@ class UserMediaTest extends InstagramTestCase
         $this->assertInternalType('array', $data);
     }
 
-    public function testUnallowedUserException()
+    public function testUnknownException()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('specified username is not allowed');
-
-        $parser = $this->getInstagramParser();
-        $parser->setConfig('just.this.guy', 'allowed_usernames');
-        $parser->getUserRecentMedia($this->user);
-    }
-
-    public function testUnknownUserException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('this user does not exist');
+        $this->expectExceptionMessage('there are no results for this query');
 
         $parser = $this->getInstagramParser();
         $parser->getUserRecentMedia(md5($this->user));

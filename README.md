@@ -15,17 +15,11 @@ Parses data from Instagram without API access.
 ## Usage
 
 ```php
-$instagram = new InstagramParser();
+$instagram = new Manager();
 $instagram->setConfig('/your/path/for/the/cache/files', 'storage_path'); // optional but recommended
 
 // get recent Media informations by User
 $data = $instagram->getUserRecentMedia('username');
-
-// get Media informations by Shortcode
-$data = $instagram->getShortcodeMedia('shortcode');
-
-// get informations for User
-$data = $instagram->getUser('username');
 
 // get recent Media informations by Tag
 $data = $instagram->getTagRecentMedia('tag');
